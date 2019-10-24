@@ -11,7 +11,7 @@ Making it easy to get started with Amazon Chime Voice Connector live audio strea
 - [Sample Trigger Lambda](#Sample-trigger-Lambda-function)
 
 ## Project Overview
-The purpose of this project is to provide a code example and a fully functional Lambda function to get you started with capturing and transcribing Amazon Chime Voice Connector phone calls using Amazon Kinesis Video Streams and Amazon Transcribe. This Lambda function can be used to create varying solutions such as capturing audio on calls for real time actions on transcriptions, or creating a call recording solution. To enable these different use-cases there are multiple [environment variables](#lambda-environment-variables) required for the lambda function.
+The purpose of this project is to provide a code example and a fully functional AWS Lambda function to get you started with capturing and transcribing Amazon Chime Voice Connector phone calls using Amazon Kinesis Video Streams and Amazon Transcribe. This Lambda function can be used to create varying solutions such as capturing audio on calls for real time actions on transcriptions, or creating a call recording solution. To enable these different use-cases there are multiple [environment variables](#lambda-environment-variables) required for the lambda function.
 
 ## Architecture Overview
 ![](images/kinesis-chime.svg)
@@ -182,4 +182,3 @@ The following is a sample invocation event.
    }
 }
 ```
-
