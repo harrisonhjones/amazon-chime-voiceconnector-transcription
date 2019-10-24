@@ -1,0 +1,23 @@
+{
+   "records":[
+      {
+         "messageId":"aee5166b-6f11-44c6-aee9-155ac5c169d6",
+         "receiptHandle":"Guiy6b6zgLevTnGH+Yzc6M=",
+         "body":"{\"version\":\"0\",\"id\":\"bc2c1ea5-19dd-d03b-4149-7b6c70077ccb\",\"detail-type\":\"Chime VoiceConnector Streaming Status\",\"source\":\"aws.chime\",\"account\":\"12345678\",\"time\":\"2019-09-27T16:08:04Z\",\"region\":\"us-east-1\",\"resources\":[],\"detail\":{\"callId\":\"cfb57784-5be3-1238-04b6-02246e5f89ae\",\"direction\":\"Outbound\",\"mediaType\":\"audio/L16\",\"startFragmentNumber\":\"91343852333182576249278362314619637737608003331\",\"startTime\":\"2019-09-27T16:08:02.702Z\",\"streamArn\":\"arn:aws:kinesisvideo:us-east-1:12345678:stream/ChimeVoiceConnector-fo6zye2x3gr0vjugxb0k5i-0da7cc9d-b151-423c-8cd7-0ed2e1887bca/1569388023478\",\"transactionId\":\"24f48be4-2036-41d5-a6f8-f25e486b76c6\",\"voiceConnectorId\":\"fye2x3gr0vjugxb0k5i\",\"streamingStatus\":\"STARTED\",\"version\":\"0\"}}",
+         "md5OfBody":"bd47cdd3c08604c9ec28c",
+         "md5OfMessageAttributes":null,
+         "eventSourceArn":"arn:aws:sqs:us-east-1:12345678:ChimeVoiceConnectorStreaming",
+         "eventSource":"aws:sqs",
+         "awsRegion":"us-east-1",
+         "attributes":{
+            "ApproximateReceiveCount":"1",
+            "SentTimestamp":"1569600485134",
+            "SenderId":"AIDAJWMS6ZT4JN5U4ZWVO",
+            "ApproximateFirstReceiveTimestamp":"1569600485135"
+         },
+         "messageAttributes":{
+
+         }
+      }
+   ]
+}
