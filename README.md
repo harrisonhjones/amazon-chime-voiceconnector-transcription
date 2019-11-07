@@ -44,11 +44,7 @@ The simplest way to get started is to:
 
 1. Ensure that your Amazon Chime Voice Connector has the "Streaming" feature enabled by following the [Amazon Chime Voice Connector documentation](https://docs.aws.amazon.com/chime/xxxx) for "Enable Streaming"  
 - Create (or use an existing) S3 bucket for the audio files to be uploaded
-
-**Now you will have Call Recordings in S3**
-   - 2 recording files for each call will be uploaded in S3 representing each call leg
-
-**If you would like to use the real-time transcription feature:**
+- 2 recording files for each call will be uploaded in S3 representing each call leg
 
 1. Create a DynamoDB table, with the "Partition Key" named `callId` and String data type along with "Sort Key" named `sequenceNumber` with Number data type
 2. [Download](https://github.com/aws-samples/amazon-chime-voiceconnector-transcription) and deploy the pre-packaged Lambda function
