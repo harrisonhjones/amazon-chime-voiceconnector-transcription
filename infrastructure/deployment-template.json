@@ -1,0 +1,107 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Transform": "AWS::Serverless-2016-10-31",
+    "Description": "Create Lambda to Save Audio Stream in S3",
+    "Resources": {
+        "RecodingBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName": "voice.connector.telephone.call.recordings"
+            }
+        },
+        "EventSQS": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": {
+                "QueueName": "ChimeVoiceConnectorStreaming",
+                "VisibilityTimeout": 1800
+            }
+        },
+        "SendEventToSQSRule": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "EventPattern": {
+                    "source": [
+                        "aws.chime"
+                    ]
+                },
+                "Targets": [
+                    {
+                        "Id": 1,
+                        "Arn": {
+                            "Fn::GetAtt": [
+                                "EventSQS",
+                                "Arn"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "LambdaRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+                    "arn:aws:iam::aws:policy/AmazonSQSFullAccess",
+                    "arn:aws:iam::aws:policy/AmazonKinesisVideoStreamsFullAccess",
+                    "arn:aws:iam::aws:policy/CloudWatchFullAccess",
+                    "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sts:AssumeRole"
+                            ],
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "MainLambdaFunction": {
+            "Type": "AWS::Serverless::Function",
+            "Properties": {
+                "MemorySize": 1024,
+                "Timeout": 900,
+                "Handler": "com.amazonaws.kvstranscribestreaming.KVSTranscribeStreamingLambda::handleRequest",
+                "Runtime": "java8",
+                "CodeUri": "s3://voice.connector.telephone.call.sample.sourcecode/db8aa6b6a2d00783975ad1ba81eea772",
+                "Role": {
+                    "Fn::GetAtt": [
+                        "LambdaRole",
+                        "Arn"
+                    ]
+                },
+                "Environment": {
+                    "Variables": {
+                        "IS_TRANSCRIBE_ENABLED": "false",
+                        "RECORDINGS_BUCKET_NAME": {
+                            "Ref": "RecodingBucket"
+                        }
+                    }
+                },
+                "Events": {
+                    "EventQueue": {
+                        "Type": "SQS",
+                        "Properties": {
+                            "Queue": {
+                                "Fn::GetAtt": [
+                                    "EventSQS",
+                                    "Arn"
+                                ]
+                            },
+                            "BatchSize": 1
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
