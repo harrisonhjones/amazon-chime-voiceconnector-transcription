@@ -29,11 +29,11 @@ jobs: # a collection of steps
             - ~/.gradle/caches
           key: v1-gradle-cache-{{ checksum "build.gradle" }}
       - run:
-          name: Assemble JAR
+          name: Build JAR
           command: |
             # Skip this for other nodes
             if [ "$CIRCLE_NODE_INDEX" == 0 ]; then
-              ./gradlew assemble
+              ./gradlew build
             fi
       # As the JAR was only assembled in the first build container, build/libs will be empty in all the other build containers.
       - store_artifacts:
