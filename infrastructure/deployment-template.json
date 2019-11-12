@@ -37,6 +37,50 @@
                 ]
             }
         },
+        "EventSQSSendEventPolicy": {
+            "Type": "AWS::SQS::QueuePolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Id": "GrantSendEventPermission",
+                    "Statement": [
+                        {
+                            "Sid": "1",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "events.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sqs:SendMessage"
+                            ],
+                            "Resource": {
+                                "Fn::GetAtt": [
+                                    "EventSQS",
+                                    "Arn"
+                                ]
+                            },
+                            "Condition": {
+                                "ArnEquals": {
+                                    "AWS:SourceArn": {
+                                        "Fn::GetAtt": [
+                                            "SendEventToSQSRule",
+                                            "Arn"
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
+                "Queues": [
+                    {
+                        "Ref": "EventSQS"
+                    }
+                ]
+            }
+        },
         "LambdaRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
@@ -72,7 +116,7 @@
                 "Timeout": 900,
                 "Handler": "com.amazonaws.kvstranscribestreaming.KVSTranscribeStreamingLambda::handleRequest",
                 "Runtime": "java8",
-                "CodeUri": "s3://voice.connector.telephone.call.sample.sourcecode/db8aa6b6a2d00783975ad1ba81eea772",
+                "CodeUri": "s3://voice.connector.telephone.call.sample.sourcecode/0a929addacfbe09b7b4e9c79db014b0b",
                 "Role": {
                     "Fn::GetAtt": [
                         "LambdaRole",
