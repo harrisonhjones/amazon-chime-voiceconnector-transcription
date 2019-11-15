@@ -9,6 +9,36 @@
                 "BucketName": "voice.connector.telephone.call.recordings"
             }
         },
+        "TranscriptionTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "CallId",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "SequenceNumber",
+                        "AttributeType": "N"
+                    }
+                ],
+                "KeySchema": [
+                    {
+                        "AttributeName": "CallId",
+                        "KeyType": "HASH"
+                    },
+                    {
+                        "AttributeName": "SequenceNumber",
+                        "KeyType": "RANGE"
+                    }
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": "5",
+                    "WriteCapacityUnits": "5"
+                },
+                "TableName": "TranscriptionsData"
+            }
+        },
         "EventSQS": {
             "Type": "AWS::SQS::Queue",
             "Properties": {
@@ -89,7 +119,9 @@
                     "arn:aws:iam::aws:policy/AmazonSQSFullAccess",
                     "arn:aws:iam::aws:policy/AmazonKinesisVideoStreamsFullAccess",
                     "arn:aws:iam::aws:policy/CloudWatchFullAccess",
-                    "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+                    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+                    "arn:aws:iam::aws:policy/AmazonTranscribeFullAccess",
+                    "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
                 ],
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",
@@ -116,7 +148,7 @@
                 "Timeout": 900,
                 "Handler": "com.amazonaws.kvstranscribestreaming.KVSTranscribeStreamingLambda::handleRequest",
                 "Runtime": "java8",
-                "CodeUri": "s3://voice.connector.telephone.call.sample.sourcecode/0a929addacfbe09b7b4e9c79db014b0b",
+                "CodeUri": "./amazon-chime-voiceconnector-recordandtranscribe.zip",
                 "Role": {
                     "Fn::GetAtt": [
                         "LambdaRole",
@@ -125,7 +157,7 @@
                 },
                 "Environment": {
                     "Variables": {
-                        "IS_TRANSCRIBE_ENABLED": "false",
+                        "IS_TRANSCRIBE_ENABLED": "true",
                         "RECORDINGS_BUCKET_NAME": {
                             "Ref": "RecodingBucket"
                         }
