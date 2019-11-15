@@ -1,6 +1,6 @@
 apply plugin: 'java'
 
-archivesBaseName = 'callaudio.recordandtranscribe'
+archivesBaseName = 'amazon-chime-voiceconnector-recordandtranscribe'
 repositories {
     mavenCentral()
 }
@@ -36,4 +36,9 @@ task buildZip(type: Zip) {
     }
 }
 
-build.dependsOn buildZip
+task copyCFTemplate(type: Copy){
+    from "infrastructure/deployment-template.json"
+    into "$buildDir/distributions"
+}
+
+build.dependsOn buildZip, copyCFTemplate
