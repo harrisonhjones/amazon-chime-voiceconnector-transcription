@@ -147,7 +147,7 @@
                 "MemorySize": 1024,
                 "Timeout": 900,
                 "Handler": "com.amazonaws.kvstranscribestreaming.KVSTranscribeStreamingLambda::handleRequest",
-                "Runtime": "java8",
+                "Runtime": "java11",
                 "CodeUri": "./amazon-chime-voiceconnector-recordandtranscribe.zip",
                 "Role": {
                     "Fn::GetAtt": [
