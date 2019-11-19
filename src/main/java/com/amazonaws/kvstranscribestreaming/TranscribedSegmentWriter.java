@@ -37,7 +37,6 @@ public class TranscribedSegmentWriter {
     private Boolean consoleLogTranscriptFlag;
     private int sequenceNumber = 0;
     private static final String TABLE_CALLER_TRANSCRIPT = "TranscriptionsData";
-    private static final boolean SAVE_PARTIAL_TRANSCRIPTS = true;
     private static final Logger logger = LoggerFactory.getLogger(TranscribedSegmentWriter.class);
 
     public TranscribedSegmentWriter(String contactId, DynamoDB ddbClient, Boolean consoleLogTranscriptFlag) {
