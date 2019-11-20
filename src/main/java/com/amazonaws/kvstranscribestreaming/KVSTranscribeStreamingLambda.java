@@ -75,8 +75,8 @@ import java.util.concurrent.TimeoutException;
  */
 public class KVSTranscribeStreamingLambda implements RequestHandler<SQSEvent, String> {
 
-    private static final Regions REGION = Regions.US_EAST_1;
-    private static final Regions TRANSCRIBE_REGION = Regions.US_EAST_1;
+    private static final Regions REGION = Regions.fromName(System.getenv("AWS_REGION"));
+    private static final Regions TRANSCRIBE_REGION = Regions.fromName(System.getenv("AWS_REGION"));
     private static final String TRANSCRIBE_ENDPOINT = "https://transcribestreaming." + TRANSCRIBE_REGION.getName()
             + ".amazonaws.com";
     private static final String RECORDINGS_BUCKET_NAME = System.getenv("RECORDINGS_BUCKET_NAME");

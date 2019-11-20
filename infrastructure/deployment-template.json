@@ -6,7 +6,18 @@
         "RecodingBucket": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
-                "BucketName": "voice.connector.telephone.call.recordings"
+                "BucketName": {
+                    "Fn::Sub": "CallRecordings-${AWS::Region}-${AWS::AccountId}"
+                },
+                "BucketEncryption": {
+                    "ServerSideEncryptionConfiguration": [
+                        {
+                            "ServerSideEncryptionByDefault": {
+                                "SSEAlgorithm": "AES256"
+                            }
+                        }
+                    ]
+                }
             }
         },
         "TranscriptionTable": {
