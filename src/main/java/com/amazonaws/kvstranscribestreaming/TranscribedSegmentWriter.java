@@ -9,7 +9,6 @@ import software.amazon.awssdk.services.transcribestreaming.model.Result;
 import software.amazon.awssdk.services.transcribestreaming.model.TranscriptEvent;
 
 import java.text.NumberFormat;
-import java.time.Instant;
 import java.util.List;
 
 /**
@@ -83,16 +82,20 @@ public class TranscribedSegmentWriter {
      */
     public void writeTranscribeDoneToDynamoDB()
     {
-        logger.info("writing to DDB for " + contactId);
+        logger.info("writing end of transcription to DDB for " + contactId);
         Item ddbItem = new Item()
             .withKeyComponent("CallId", contactId)
             .withKeyComponent("SequenceNumber", ++sequenceNumber)
-            .withString("TranscribedStream", "")
-            .withBoolean("IsPartial", false)
+            .withString("TranscribedStream", "END_OF_TRANSCRIPTION")
+            .withBoolean("IsPartial", Boolean.FALSE)
             .withBoolean("IsFinal", Boolean.TRUE);
+        
         if (ddbItem != null) {
-            getDdbClient().getTable(TABLE_CALLER_TRANSCRIPT).putItem(ddbItem);
-            logger.info("written to DDB");
+            try {
+                getDdbClient().getTable(TABLE_CALLER_TRANSCRIPT).putItem(ddbItem);
+            } catch (Exception e) {
+                logger.error("Exception while writing to DDB:", e);
+            }
         }
     }
 
@@ -108,7 +111,6 @@ public class TranscribedSegmentWriter {
         if (result.alternatives().size() > 0) {
             if (!result.alternatives().get(0).transcript().isEmpty()) {
 
-                Instant now = Instant.now();
                 ddbItem = new Item()
                         .withKeyComponent("CallId", contactId)
                         .withKeyComponent("SequenceNumber", ++sequenceNumber)
