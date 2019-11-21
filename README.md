@@ -21,14 +21,14 @@ This solution can be configured using the following services: [Amazon Chime](htt
 
 With [Amazon Chime](https://aws.amazon.com/chime/) Voice Connector, customer audio can be live streamed to Kinesis Video Streams as described in this [Amazon Chime documentation] (https://docs.aws.amazon.com/chime). This project serves as an example of how to consume an Amazon Chime Voice Connector live audio stream, capture the audio and send it to S3 in the form of an audio wav file, as well as perform real-time transcription using [Amazon Transcribe](https://aws.amazon.com/transcribe) and posting those transcriptions to a DynamoDB table. 
 
-In the diagram above, once a call is connected to Amazon Chime Voice Connector:
-
- - (Step 1) In the Amazon Chime Voice Connector configuration page in the AWS Chime Console
+In the diagram above:
+- (Step 1) Configure Voice Connector to stream the real-time audio of Voice Connector SIP trunk calls or SIP-based Media Recording (SIPREC) media streams from your on-premises Session Border Controller (SBC), Private Branch Exchange (PBX), or Contact Center
+- (Step 2) In the Amazon Chime Voice Connector configuration page in the AWS Chime Console
     - Ensure "start" is selected in the Streaming tab next to "Send to Kinesis Video Streams"
     - Amazon Chime Voice connector will create a stream for each concurrent call party (2 streams per call) while this option is selected and publish CloudWatch events with the TransactionId, Kinesis Video Stream ARN, and Fragment Number when a call starts.
-- (Step 2) A CloudWatch event rule is created to take these events and send them to a target SQS Queue
-- (Step 3) A Lambda function is created using the sample code in this repository to trigger off of this SQS Queue. This Lambda will serve as a Kinesis Video Stream (KVS) Consumer/transcriber and will continue to process audio for a maximum of 15 minutes (Lambda limit) or until the call is disconnected.
-- (Step 4) The Lambda function will take the transcripts returned from Amazon Transcribe and save the transcripted segments to a DynamoDB table.  It will also save the audio bytes to a file when the call ends and upload to S3 as a wav file.
+- (Step 3) A CloudWatch event rule is created to take these events and send them to a target SQS Queue
+- (Step 4) A Lambda function is created using the sample code in this repository to trigger off of this SQS Queue. This Lambda will serve as a Kinesis Video Stream (KVS) Consumer/transcriber and will continue to process audio for a maximum of 15 minutes (Lambda limit) or until the call is disconnected.
+- (Step 5) The Lambda function will take the transcripts returned from Amazon Transcribe and save the transcripted segments to a DynamoDB table.  It will also save the audio bytes to a file when the call ends and upload to S3 as a wav file.
 
 
 The Lambda code expects the Kinesis Video Stream details provided by the Amazon CloudWatch Event including `transactionId`, `streamArn` and `startFragmentNumber`.The handler function of the Lambda is present in `KVSTranscribeStreamingLambda.java` and it uses the GetMedia API of Kinesis Video Stream to fetch the InputStream of the customer audio call. The InputStream is processed using the AWS Kinesis Video Streams provided Parser Library. If the `transcriptionEnabled` property is set to true on the input, a TranscribeStreamingRetryClient client is used to send audio bytes of the audio call to Transcribe. As the transcript segments are being returned, they are saved in a DynamoDB table having TransactionId as the Partition key and StartTime of the segment as the Sort key. The audio bytes are also saved in a file along with this and at the end of the audio call, if the `saveCallRecording` property is set to true on the input, the WAV audio file is uploaded to S3 in the provided `RECORDINGS_BUCKET_NAME` bucket. 
