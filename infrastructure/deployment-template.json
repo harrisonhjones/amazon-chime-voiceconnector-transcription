@@ -7,7 +7,7 @@
             "Type": "AWS::S3::Bucket",
             "Properties": {
                 "BucketName": {
-                    "Fn::Sub": "CallRecordings-${AWS::Region}-${AWS::AccountId}"
+                    "Fn::Sub": "callrecordings-${AWS::Region}-${AWS::AccountId}"
                 },
                 "BucketEncryption": {
                     "ServerSideEncryptionConfiguration": [
