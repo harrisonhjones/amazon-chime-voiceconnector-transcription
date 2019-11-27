@@ -19,7 +19,7 @@ The purpose of this project is to provide a code example and a fully functional 
 ### Description
 This solution can be configured using the following services: [Amazon Chime](https://aws.amazon.com/chime/) - Voice Connector, [Amazon Kinesis Video Streams](https://aws.amazon.com/kinesis/video-streams), [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/), [Amazon Simple Queue Service](https://aws.amazon.com/sqs/), [Amazon Transcribe](https://aws.amazon.com/transcribe), [Amazon DynamoDB](https://aws.amazon.com/dynamodb), [AWS Lambda](https://aws.amazon.com/lambda), and [Amazon S3](https://aws.amazon.com/s3).
 
-With [Amazon Chime](https://aws.amazon.com/chime/) Voice Connector, customer audio can be live streamed to Kinesis Video Streams as described in this [Amazon Chime documentation] (https://docs.aws.amazon.com/chime). This project serves as an example of how to consume an Amazon Chime Voice Connector live audio stream, capture the audio and send it to S3 in the form of an audio wav file, as well as perform real-time transcription using [Amazon Transcribe](https://aws.amazon.com/transcribe) and posting those transcriptions to a DynamoDB table. 
+With [Amazon Chime](https://aws.amazon.com/chime/) Voice Connector, customer audio can be live streamed to Kinesis Video Streams as described in the [Amazon Chime documentation](https://docs.aws.amazon.com/chime). This project serves as an example of how to consume an Amazon Chime Voice Connector live audio stream, capture the audio and send it to S3 in the form of an audio wav file, as well as perform real-time transcription using [Amazon Transcribe](https://aws.amazon.com/transcribe) and posting those transcriptions to a DynamoDB table. 
 
 In the diagram above:
 - (Step 1) Configure Voice Connector to stream the real-time audio of Voice Connector SIP trunk calls or SIP-based Media Recording (SIPREC) media streams from your on-premises Session Border Controller (SBC), Private Branch Exchange (PBX), or Contact Center
@@ -29,7 +29,6 @@ In the diagram above:
 - (Step 3) A CloudWatch event rule is created to take these events and send them to a target SQS Queue
 - (Step 4) A Lambda function is created using the sample code in this repository to trigger off of this SQS Queue. This Lambda will serve as a Kinesis Video Stream (KVS) Consumer/transcriber and will continue to process audio for a maximum of 15 minutes (Lambda limit) or until the call is disconnected.
 - (Step 5) The Lambda function will take the transcripts returned from Amazon Transcribe and save the transcripted segments to a DynamoDB table.  It will also save the audio bytes to a file when the call ends and upload to S3 as a wav file.
-
 
 The Lambda code expects the Kinesis Video Stream details provided by the Amazon CloudWatch Event including `transactionId`, `streamArn` and `startFragmentNumber`.The handler function of the Lambda is present in `KVSTranscribeStreamingLambda.java` and it uses the GetMedia API of Kinesis Video Stream to fetch the InputStream of the customer audio call. The InputStream is processed using the AWS Kinesis Video Streams provided Parser Library. If the `transcriptionEnabled` property is set to true on the input, a TranscribeStreamingRetryClient client is used to send audio bytes of the audio call to Transcribe. As the transcript segments are being returned, they are saved in a DynamoDB table having TransactionId as the Partition key and StartTime of the segment as the Sort key. The audio bytes are also saved in a file along with this and at the end of the audio call, if the `saveCallRecording` property is set to true on the input, the WAV audio file is uploaded to S3 in the provided `RECORDINGS_BUCKET_NAME` bucket. 
 
@@ -42,7 +41,7 @@ Getting started with this project is easy. The most basic use case of capturing 
 
 The simplest way to get started is to:
 
-1. Ensure that your Amazon Chime Voice Connector has the "Streaming" feature enabled by following the [Amazon Chime Voice Connector documentation](https://docs.aws.amazon.com/chime/xxxx) for "Enable Streaming"  
+1. Ensure that your Amazon Chime Voice Connector has the "Streaming" feature enabled by following the [Amazon Chime Voice Connector documentation](https://docs.aws.amazon.com/chime/latest/ag/voice-connectors.html) for "Enable Streaming"  
 - Create (or use an existing) S3 bucket for the audio files to be uploaded
 - 2 recording files for each call will be uploaded in S3 representing each call leg
 
@@ -54,7 +53,6 @@ The simplest way to get started is to:
     - The handler for the lambda function is: `com.amazonaws.kvstranscribestreaming.KVSTranscribeStreamingLambda::handleRequest`
 - Populate the [environment variables](#Lambda Environment Variables) with the correct details for your solution
 
-
 ### Building the project
 The lambda code is designed to be built with Gradle. All requisite dependencies are captured in the `build.gradle` file. The code also depends on the [AWS Kinesis Video Streams Parser Library](https://github.com/aws/amazon-kinesis-video-streams-parser-library) which has been built into a jar can be found in the jars folder. Simply use `gradle build` to build the zip that can be deployed as an AWS Lambda application.
 
@@ -65,7 +63,6 @@ The lambda code is designed to be built with Gradle. All requisite dependencies 
 4. Create the lambda function choosing Java 8 and upload the zip AWSVoiceConnectorToTranscribeLambda.zip package from the build folder that was built with Gradle above.
 5. Create a CloudWatch event rule which gets triggered when Streaming to Kinesis starts and has target set to SQS queue created in previous step.
 6. Create S3 bucket where call recordings will be stored and configure Lambda to use the same bucket by setting system variable `RECORDINGS_BUCKET_NAME`.
-
 
 ## SQS Queue
 See [Creating an Amazon SQS Queue](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-create-queue.html) for creating via console
@@ -97,7 +94,6 @@ aws events put-rule \
  --name voiceConnectorToTranscribe \
  --event-pattern '{"source": ["aws.chime"]}'
 ```
- 
 
 2. Set SQS ARN created previously as target for above created rule
 
@@ -106,8 +102,6 @@ aws events put-targets \
  --rule voiceConnectorToTranscribe \
  --targets Id=1,Arn=arn:aws:sqs:us-east-1:123456789012:ChimeVoiceConnectorStreaming 
 ```
- 
-
 
 ## Lambda Environment Variables
 This Lambda Function has environment variables that control its behavior:
